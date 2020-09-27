@@ -56,11 +56,14 @@ def model_fn(features, labels, mode, params):
         # batch * 1
         logits = tf.layers.dense(tf.concat([linear_part, deep_part]), 1, activation=None)
 
-
-
-
-
-
+        my_head = tf.contrib.estimator.binary_classification_head()
+        return my_head.create_estimator_spec(
+            features=features,
+            mode=mode,
+            labels=labels,
+            optimizer=tf.train.AdamOptimizer(learning_rate=learning_rate),
+            logits=logits
+        )
 
 
 
