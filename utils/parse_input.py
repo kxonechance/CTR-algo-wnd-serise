@@ -22,6 +22,7 @@ SPARSE_COLUMNS = [
     'ps_car_07_cat', 'ps_car_08_cat', 'ps_car_09_cat',
     'ps_car_10_cat', 'ps_car_11_cat',
 ]
+
 DENSE_COLUMNS = [
     "ps_reg_01", "ps_reg_02", "ps_reg_03",
     "ps_car_12", "ps_car_13", "ps_car_14", "ps_car_15",
@@ -44,19 +45,53 @@ def parse_input(train_path, test_path, use_cross=False):
     df_train = df_train[DENSE_COLUMNS + SPARSE_COLUMNS]
     df_test = df_test[DENSE_COLUMNS + SPARSE_COLUMNS]
 
-    for cross_col in CROSS_COLUMNS:
-        df_train['-'.join(cross_col)] = df_train[cross_col[0]].astype(str).str.cat(df_train[cross_col[1]].astype(str), sep='-')
-        df_test['-'.join(cross_col)] = df_test[cross_col[0]].astype(str).str.cat(df_test[cross_col[1]].astype(str), sep='-')
+    if use_cross:
+        for cross_col in CROSS_COLUMNS:
+            df_train['-'.join(cross_col)] = df_train[cross_col[0]].astype(str).str.cat(df_train[cross_col[1]].astype(str), sep='-')
+            df_test['-'.join(cross_col)] = df_test[cross_col[0]].astype(str).str.cat(df_test[cross_col[1]].astype(str), sep='-')
 
-    
+    df = pd.concat([df_train, df_test])
+    idx = 0
+    feat2idx = {}
+    for col in df.columns:
+        if col in DENSE_COLUMNS:
+            feat2idx[col] = idx
+            idx += 1
+        else:
+            feats = df[col].unique()
+            feat2idx[col] = dict(zip(feats, range(idx, idx+len(feats))))
+            idx += len(feats)
 
+    df_train_idx = df_train.copy()
+    df_test_idx = df_test.copy()
 
+    for col in df_train.columns:
+        if col in DENSE_COLUMNS:
+            df_train_idx[col] = feat2idx[col]
+        else:
+            df_train_idx[col] = df_train_idx[col].apply(lambda x: feat2idx[col][x])
+            df_train[col] = 1.0
 
+    for col in df_test.columns:
+        if col in DENSE_COLUMNS:
+            df_test_idx[col] = feat2idx[col]
+        else:
+            df_test_idx[col] = df_test_idx[col].apply(lambda x: feat2idx[col][x])
+            df_test[col] = 1.0
 
+    df_train_idx = df_train_idx.values.tolist()
+    df_train = df_train.values.tolist()
 
+    df_test_idx = df_test_idx.values.tolist()
+    df_test = df_test.values.tolist()
 
-
+    return {'train': (y, df_train_idx, df_train),
+            'test': (ids, df_test_idx, df_test),
+            'num_features': idx,
+            'num_fields': len(df.columns)
+            }
 
 
 if __name__ == "__main__":
-    pass
+    ret = parse_input('../datasets/train.csv', '../datasets/test.csv', use_cross=True)
+    print(ret)
