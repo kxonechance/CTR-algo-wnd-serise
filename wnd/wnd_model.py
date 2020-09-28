@@ -31,7 +31,8 @@ def model_fn(features, labels, mode, params):
     indices = tf.reshape(features['indices'], shape=[-1, num_fields])
     values = tf.reshape(features['values'], shape=[-1, num_fields])
 
-    labels = tf.reshape(labels, shape=[-1, 1])
+    if mode != tf.estimator.ModeKeys.PREDICT:
+        labels = tf.reshape(labels, shape=[-1, 1])
 
     with tf.variable_scope('linear_part'):
         # linear_part weight: num_features * 1
@@ -65,7 +66,6 @@ def model_fn(features, labels, mode, params):
             optimizer=tf.train.AdamOptimizer(learning_rate=learning_rate),
             logits=logits
         )
-
 
 
 if __name__ == "__main__":

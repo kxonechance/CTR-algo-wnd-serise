@@ -48,10 +48,12 @@ def predict(num_factors):
         }
     )
 
-    pred = estimator.predict(predict_input_fn)
-    for i in pred:
-        print(i)
+    preds = estimator.predict(predict_input_fn)
+
+    return list(zip(ids, preds))
 
 
 if __name__ == "__main__":
-    predict(16)
+    res = predict(16)
+    for i in res:
+        print(i)
