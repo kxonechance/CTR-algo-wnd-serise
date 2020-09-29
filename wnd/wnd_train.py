@@ -54,7 +54,8 @@ def train(batch_size, epochs, learning_rate, num_factors):
         params={
             'num_features': num_features,
             'num_fields': num_fields,
-            'num_factors': num_factors
+            'num_factors': num_factors,
+            'learning_rate': learning_rate
         }
     )
 
@@ -64,4 +65,4 @@ def train(batch_size, epochs, learning_rate, num_factors):
 
 
 if __name__ == "__main__":
-    train(1, 100, 0.001, 16)
+    train(batch_size=1, epochs=100, learning_rate=0.001, num_factors=16)
