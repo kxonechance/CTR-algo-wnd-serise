@@ -92,6 +92,69 @@ def parse_input(train_path, test_path, use_cross=False):
             }
 
 
+def parse_input_v2(train_path, test_path, use_cross=False):
+    df_train = pd.read_csv(train_path)
+    df_test = pd.read_csv(test_path)
+
+    y = df_train[TARGET_COLUMN].tolist()
+    ids = df_test[ID_COLUMN].tolist()
+
+    df_train = df_train[DENSE_COLUMNS + SPARSE_COLUMNS]
+    df_test = df_test[DENSE_COLUMNS + SPARSE_COLUMNS]
+
+    if use_cross:
+        for cross_col in CROSS_COLUMNS:
+            df_train['-'.join(cross_col)] = df_train[cross_col[0]].astype(str).str.cat(df_train[cross_col[1]].astype(str), sep='-')
+            df_test['-'.join(cross_col)] = df_test[cross_col[0]].astype(str).str.cat(df_test[cross_col[1]].astype(str), sep='-')
+
+    df = pd.concat([df_train, df_test])
+    idx = 0
+    feat2idx = {}
+    for col in df.columns:
+        if col in DENSE_COLUMNS:
+            feat2idx[col] = idx
+            idx += 1
+        else:
+            feats = df[col].unique()
+            feat2idx[col] = dict(zip(feats, range(idx, idx+len(feats))))
+            idx += len(feats)
+
+    df_train_idx = df_train.copy()
+    df_test_idx = df_test.copy()
+
+    for col in df_train.columns:
+        if col in DENSE_COLUMNS:
+            df_train_idx[col] = feat2idx[col]
+        else:
+            df_train_idx[col] = df_train_idx[col].apply(lambda x: feat2idx[col][x])
+            df_train[col] = 1.0
+
+    for col in df_test.columns:
+        if col in DENSE_COLUMNS:
+            df_test_idx[col] = feat2idx[col]
+        else:
+            df_test_idx[col] = df_test_idx[col].apply(lambda x: feat2idx[col][x])
+            df_test[col] = 1.0
+
+    df_train_dense_idx = df_train_idx[DENSE_COLUMNS].values.tolist()
+    df_train_dense_val = df_train[DENSE_COLUMNS].values.tolist()
+    df_train_sparse_idx = df_train_idx[SPARSE_COLUMNS].values.tolist()
+    df_train_sparse_val = df_train[SPARSE_COLUMNS].values.tolist()
+
+    df_test_dense_idx = df_test_idx[DENSE_COLUMNS].values.tolist()
+    df_test_dense_val = df_test[DENSE_COLUMNS].values.tolist()
+    df_test_sparse_idx = df_test_idx[SPARSE_COLUMNS].values.tolist()
+    df_test_sparse_val = df_test[SPARSE_COLUMNS].values.tolist()
+
+    return {'train': (y, df_train_dense_idx, df_train_dense_val, df_train_sparse_idx, df_train_sparse_val),
+            'test': (ids, df_test_dense_idx, df_test_dense_val, df_test_sparse_idx, df_test_sparse_val),
+            'num_features': (len(DENSE_COLUMNS), idx-len(DENSE_COLUMNS)),
+            'num_fields': (len(DENSE_COLUMNS), len(SPARSE_COLUMNS))
+            }
+
+
+
+
 if __name__ == "__main__":
     ret = parse_input('../datasets/train.csv', '../datasets/test.csv', use_cross=True)
     print(ret)
