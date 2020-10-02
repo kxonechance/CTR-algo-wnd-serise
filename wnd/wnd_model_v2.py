@@ -32,8 +32,8 @@ def model_fn(features, labels, mode, params):
     dense_indices = tf.reshape(features['dense_indices'], shape=[-1, num_dense_fields])
     dense_values = tf.reshape(features['dense_values'], shape=[-1, num_dense_fields])
 
-    sparse_indices = tf.reshape(features['sparse_indices'], shape=[-1, num_dense_fields])
-    sparse_values = tf.reshape(features['sparse_values'], shape=[-1, num_dense_fields])
+    sparse_indices = tf.reshape(features['sparse_indices'], shape=[-1, num_sparse_fields])
+    sparse_values = tf.reshape(features['sparse_values'], shape=[-1, num_sparse_fields])
 
     if mode != tf.estimator.ModeKeys.PREDICT:
         labels = tf.reshape(labels, shape=[-1, 1])
