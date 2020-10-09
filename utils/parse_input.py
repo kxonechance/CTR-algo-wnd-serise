@@ -108,16 +108,23 @@ def parse_input_v2(train_path, test_path, use_cross=False):
             df_test['-'.join(cross_col)] = df_test[cross_col[0]].astype(str).str.cat(df_test[cross_col[1]].astype(str), sep='-')
 
     df = pd.concat([df_train, df_test])
-    idx = 0
+
     feat2idx = {}
-    for col in df.columns:
-        if col in DENSE_COLUMNS:
-            feat2idx[col] = idx
-            idx += 1
-        else:
-            feats = df[col].unique()
-            feat2idx[col] = dict(zip(feats, range(idx, idx+len(feats))))
+    idx = 0
+    for col in SPARSE_COLUMNS:
+        feats = df[col].unique()
+        feat2idx[col] = dict(zip(feats, range(idx, idx + len(feats))))
+        idx += len(feats)
+
+    if use_cross:
+        for cross_col in CROSS_COLUMNS:
+            feats = df['-'.join(cross_col)].unique()
+            feat2idx['-'.join(cross_col)] = dict(zip(feats, range(idx, idx + len(feats))))
             idx += len(feats)
+
+    for col in DENSE_COLUMNS:
+        feat2idx[col] = idx
+        idx += 1
 
     df_train_idx = df_train.copy()
     df_test_idx = df_test.copy()
@@ -156,5 +163,5 @@ def parse_input_v2(train_path, test_path, use_cross=False):
 
 
 if __name__ == "__main__":
-    ret = parse_input('../datasets/train.csv', '../datasets/test.csv', use_cross=True)
+    ret = parse_input_v2('../datasets/train.csv', '../datasets/test.csv', use_cross=True)
     print(ret)

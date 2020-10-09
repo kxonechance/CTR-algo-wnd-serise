@@ -74,8 +74,6 @@ def train(batch_size, epochs, learning_rate, num_factors):
 
 
 
-
-
 if __name__ == "__main__":
     train(batch_size=1, epochs=100, learning_rate=0.001, num_factors=16)
 

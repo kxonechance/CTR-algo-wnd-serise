@@ -67,17 +67,17 @@ def model_fn(features, labels, mode, params):
             deep_part = tf.layers.dense(deep_part, deep_layers[i], activation=tf.nn.relu)
             deep_part = tf.layers.dropout(deep_part, rate=0.3, training=mode == tf.estimator.ModeKeys.TRAIN)
 
-        # batch * 1
-        logits = tf.layers.dense(tf.concat([linear_part, deep_part], axis=1), 1, activation=None)
+    # batch * 1
+    logits = tf.layers.dense(tf.concat([linear_part, deep_part], axis=1), 1, activation=None)
 
-        my_head = tf.contrib.estimator.binary_classification_head()
-        return my_head.create_estimator_spec(
-            features=features,
-            mode=mode,
-            labels=labels,
-            optimizer=tf.train.AdamOptimizer(learning_rate=learning_rate),
-            logits=logits
-        )
+    my_head = tf.contrib.estimator.binary_classification_head()
+    return my_head.create_estimator_spec(
+        features=features,
+        mode=mode,
+        labels=labels,
+        optimizer=tf.train.AdamOptimizer(learning_rate=learning_rate),
+        logits=logits
+    )
 
 
 if __name__ == "__main__":
