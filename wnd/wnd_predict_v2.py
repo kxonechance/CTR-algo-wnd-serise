@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 @Time    : 20/10/02 19:57
-@Author  : stevenke
+@Author  : kx
 @Site    : 
 @File    : wnd_predict_v2.py
 @Software: PyCharm

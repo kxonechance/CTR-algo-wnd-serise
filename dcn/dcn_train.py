@@ -25,7 +25,7 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 def train(batch_size, epochs, learning_rate, num_factors, num_cross_layers):
 
-    ret = parse_input_v2('../datasets/train.csv', '../datasets/test.csv', use_cross=True)
+    ret = parse_input_v2('../datasets/train.csv', '../datasets/test.csv', use_cross=False)
     labels = ret['train'][0]
     dense_indices = ret['train'][1]
     dense_values = ret['train'][2]
