@@ -66,8 +66,3 @@ if __name__ == "__main__":
     for i in res:
         print(i)
 
-
-
-if __name__ == "__main__":
-    pass
-
