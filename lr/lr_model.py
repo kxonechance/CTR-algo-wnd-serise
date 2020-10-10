@@ -38,7 +38,7 @@ def model_fn(features, labels, mode, params):
     with tf.variable_scope('linear_part'):
         # num_features * 1
         w = tf.get_variable('w', shape=[num_dense_features + num_sparse_features], initializer=tf.initializers.glorot_normal())
-        global_bias = tf.get_variable('bias', shape=[1], initializer=tf.initializers.glorot_normal())
+        global_bias = tf.get_variable('bias', shape=[1], initializer=tf.constant_initializer(0.0))
         # batch * num_fields
         indices = tf.concat([dense_indices, sparse_indices], axis=1)
         # batch * num_fields * 1
