@@ -15,8 +15,9 @@ from __future__ import print_function
 
 import tensorflow as tf
 
+
 def model_fn(features, labels, mode, params):
-    """Build Deep Cross Net model with binary_classification_head."""
+    """Build logistic regression model with binary_classification_head."""
 
     num_dense_features = params['num_dense_features']
     num_sparse_features = params['num_sparse_features']
