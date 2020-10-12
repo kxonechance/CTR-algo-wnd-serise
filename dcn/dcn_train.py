@@ -23,7 +23,7 @@ tf.enable_eager_execution()
 tf.logging.set_verbosity(tf.logging.INFO)
 
 
-def train(batch_size, epochs, learning_rate, num_factors, num_cross_layers):
+def train(batch_size, epochs, learning_rate, num_factors, num_cross_layers, deep_layers):
 
     ret = parse_input_v2('../datasets/train.csv', '../datasets/test.csv', use_cross=False)
     labels = ret['train'][0]
@@ -76,4 +76,4 @@ def train(batch_size, epochs, learning_rate, num_factors, num_cross_layers):
 
 
 if __name__ == "__main__":
-    train(batch_size=1, epochs=100, learning_rate=0.001, num_factors=16, num_cross_layers=4)
+    train(batch_size=1, epochs=100, learning_rate=0.001, num_factors=16, num_cross_layers=4, deep_layers=[100, 100])
